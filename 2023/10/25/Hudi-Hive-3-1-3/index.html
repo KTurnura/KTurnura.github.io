@@ -20,31 +20,33 @@
     var CONFIG = {"hostname":"example.com","root":"/","scheme":"Pisces","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":true,"show_result":true,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":true},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":true,"comments":{"style":"tabs","active":"gitalk","storage":true,"lazyload":false,"nav":null,"activeClass":"gitalk"},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
   </script>
 
-  <meta name="description" content="涉猎的主要编程语言Java、Go，领域涵盖数据挖掘、分布式计算、流批处理等。">
-<meta property="og:type" content="website">
-<meta property="og:title" content="KTurnura Blog">
-<meta property="og:url" content="http://example.com/index.html">
+  <meta name="description" content="关于Hudi 0.13.1 Streaming Query  报错   org.apache.hadoop.hive.ql.io.parquet.MapredParquetInputFormat ClassNotFoundException  Keywords: Hudi编译Hive，Flink对Hudi进行Streaming Query，Hudi包冲突，编译Hudi 版本：     Hadoop">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Hudi-Hive-3.1.3">
+<meta property="og:url" content="http://example.com/2023/10/25/Hudi-Hive-3-1-3/index.html">
 <meta property="og:site_name" content="KTurnura Blog">
-<meta property="og:description" content="涉猎的主要编程语言Java、Go，领域涵盖数据挖掘、分布式计算、流批处理等。">
+<meta property="og:description" content="关于Hudi 0.13.1 Streaming Query  报错   org.apache.hadoop.hive.ql.io.parquet.MapredParquetInputFormat ClassNotFoundException  Keywords: Hudi编译Hive，Flink对Hudi进行Streaming Query，Hudi包冲突，编译Hudi 版本：     Hadoop">
 <meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2023-10-25T15:49:54.000Z">
+<meta property="article:modified_time" content="2023-10-25T15:50:11.045Z">
 <meta property="article:author" content="KTurnura">
 <meta property="article:tag" content="Go, Java, 分布式，大型密集型系统设计">
 <meta name="twitter:card" content="summary">
 
-<link rel="canonical" href="http://example.com/">
+<link rel="canonical" href="http://example.com/2023/10/25/Hudi-Hive-3-1-3/">
 
 
 <script id="page-configurations">
   // https://hexo.io/docs/variables.html
   CONFIG.page = {
     sidebar: "",
-    isHome : true,
-    isPost : false,
+    isHome : false,
+    isPost : true,
     lang   : 'zh-CN'
   };
 </script>
 
-  <title>KTurnura Blog</title>
+  <title>Hudi-Hive-3.1.3 | KTurnura Blog</title>
   
 
 
@@ -175,9 +177,10 @@
         <div class="content-wrap">
           
 
-          <div class="content index posts-expand">
+          <div class="content post posts-expand">
             
-      
+
+    
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
@@ -193,10 +196,9 @@
       <meta itemprop="name" content="KTurnura Blog">
     </span>
       <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2023/10/25/Hudi-Hive-3-1-3/" class="post-title-link" itemprop="url">Hudi-Hive-3.1.3</a>
-        </h2>
+        <h1 class="post-title" itemprop="name headline">
+          Hudi-Hive-3.1.3
+        </h1>
 
         <div class="post-meta">
             <span class="post-meta-item">
@@ -234,7 +236,7 @@
     <div class="post-body" itemprop="articleBody">
 
       
-          <p>关于Hudi 0.13.1 Streaming Query  报错</p>
+        <p>关于Hudi 0.13.1 Streaming Query  报错</p>
 <blockquote>
 <p> org.apache.hadoop.hive.ql.io.parquet.MapredParquetInputFormat ClassNotFoundException</p>
 </blockquote>
@@ -326,269 +328,37 @@
 <h1 id="有感"><a href="#有感" class="headerlink" title="有感"></a>有感</h1><p>该文后续语言比较混乱，有大量试错的过程，原因是在解决该问题的同时用本文记录解决过程，后经过一次简单修改发布了本博客。该问题其实解决方式比较简单，只需要下载Hudi最新源码，编译Hudi，然后复制 guava.jar 到flink&#x2F;lib目录下即可解决问题。但这个解决问题的过程收获颇多。在编译Hive 和Hudi 诸多版本的源码时也遇到了一些其他的问题，解决一个问题是一个复杂问题的集合。</p>
 <p>希望该文能帮到各位</p>
 
-      
     </div>
 
     
     
     
+
       <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
 
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://example.com/2023/10/25/%E7%BC%96%E8%AF%91Hive%E6%8A%A5%E9%94%99/">
+        
 
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
-      <meta itemprop="name" content="KTurnura">
-      <meta itemprop="description" content="涉猎的主要编程语言Java、Go，领域涵盖数据挖掘、分布式计算、流批处理等。">
-    </span>
 
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="KTurnura Blog">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2023/10/25/%E7%BC%96%E8%AF%91Hive%E6%8A%A5%E9%94%99/" class="post-title-link" itemprop="url">编译Hive报错</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-              
-
-              <time title="创建时间：2023-10-25 23:47:38 / 修改时间：23:48:10" itemprop="dateCreated datePublished" datetime="2023-10-25T23:47:38+08:00">2023-10-25</time>
-            </span>
-
-          <br>
-            <span class="post-meta-item" title="本文字数">
-              <span class="post-meta-item-icon">
-                <i class="far fa-file-word"></i>
-              </span>
-                <span class="post-meta-item-text">本文字数：</span>
-              <span>619</span>
-            </span>
-            <span class="post-meta-item" title="阅读时长">
-              <span class="post-meta-item-icon">
-                <i class="far fa-clock"></i>
-              </span>
-                <span class="post-meta-item-text">阅读时长 &asymp;</span>
-              <span>1 分钟</span>
-            </span>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <h1 id="编译Hive-报错"><a href="#编译Hive-报错" class="headerlink" title="编译Hive 报错"></a>编译Hive 报错</h1><blockquote>
-<p>Failed to read artifact descriptor for org.pentaho:pentaho-aggdesigner-algorithm:jar:5.1.5-jhyde: Could not transfer artifact org.pentaho:pentaho-aggdesigner-algorithm:pom:5.1.5-jhyde from&#x2F;to conjars (<a target="_blank" rel="noopener" href="https://conjars.org/repo">https://conjars.org/repo</a>)</p>
-</blockquote>
-<p>找不到<code>pentaho-aggdesigner-algorithm-5.1.5-jhyde.jar</code>包</p>
-<p>原因：官网地址变动<a target="_blank" rel="noopener" href="https://conjars.wensel.net/">conjars</a></p>
-<p>解决办法：</p>
-<p>修改Maven setting.xml文件</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">&lt;mirrors&gt;</span><br><span class="line">  &lt;mirror&gt;</span><br><span class="line">    &lt;id&gt;conjars&lt;/id&gt;</span><br><span class="line">    &lt;name&gt;conjars&lt;/name&gt;</span><br><span class="line">    &lt;url&gt;https://conjars.wensel.net/repo/&lt;/url&gt;</span><br><span class="line">    &lt;mirrorOf&gt;conjars&lt;/mirrorOf&gt;</span><br><span class="line">  &lt;/mirror&gt;</span><br><span class="line">&lt;/mirrors&gt;</span><br></pre></td></tr></table></figure>
-
-<p>此时构建就可成功</p>
-<p>若没有访问外网的方式</p>
-<p>可以参考以下博客</p>
-<p><a target="_blank" rel="noopener" href="https://blog.csdn.net/zxctime/article/details/106007508">https://blog.csdn.net/zxctime/article/details/106007508</a></p>
-
-      
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2023/10/25/%E7%BC%96%E8%AF%91Hive%E6%8A%A5%E9%94%99/" rel="prev" title="编译Hive报错">
+      <i class="fa fa-chevron-left"></i> 编译Hive报错
+    </a></div>
+      <div class="post-nav-item"></div>
     </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
       </footer>
+    
   </article>
   
   
-  
-
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://example.com/2023/10/25/hello-world2/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
-      <meta itemprop="name" content="KTurnura">
-      <meta itemprop="description" content="涉猎的主要编程语言Java、Go，领域涵盖数据挖掘、分布式计算、流批处理等。">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="KTurnura Blog">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2023/10/25/hello-world2/" class="post-title-link" itemprop="url">hello-world2</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-              
-
-              <time title="创建时间：2023-10-25 23:04:12 / 修改时间：23:04:51" itemprop="dateCreated datePublished" datetime="2023-10-25T23:04:12+08:00">2023-10-25</time>
-            </span>
-
-          <br>
-            <span class="post-meta-item" title="本文字数">
-              <span class="post-meta-item-icon">
-                <i class="far fa-file-word"></i>
-              </span>
-                <span class="post-meta-item-text">本文字数：</span>
-              <span>4</span>
-            </span>
-            <span class="post-meta-item" title="阅读时长">
-              <span class="post-meta-item-icon">
-                <i class="far fa-clock"></i>
-              </span>
-                <span class="post-meta-item-text">阅读时长 &asymp;</span>
-              <span>1 分钟</span>
-            </span>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <h1 id="你好"><a href="#你好" class="headerlink" title="你好"></a>你好</h1><p>无敌</p>
-
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://example.com/2023/10/25/hello-world/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
-      <meta itemprop="name" content="KTurnura">
-      <meta itemprop="description" content="涉猎的主要编程语言Java、Go，领域涵盖数据挖掘、分布式计算、流批处理等。">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="KTurnura Blog">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2023/10/25/hello-world/" class="post-title-link" itemprop="url">Hello World</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-
-              <time title="创建时间：2023-10-25 22:28:05" itemprop="dateCreated datePublished" datetime="2023-10-25T22:28:05+08:00">2023-10-25</time>
-            </span>
-
-          <br>
-            <span class="post-meta-item" title="本文字数">
-              <span class="post-meta-item-icon">
-                <i class="far fa-file-word"></i>
-              </span>
-                <span class="post-meta-item-text">本文字数：</span>
-              <span>367</span>
-            </span>
-            <span class="post-meta-item" title="阅读时长">
-              <span class="post-meta-item-icon">
-                <i class="far fa-clock"></i>
-              </span>
-                <span class="post-meta-item-text">阅读时长 &asymp;</span>
-              <span>1 分钟</span>
-            </span>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <p>Welcome to <a target="_blank" rel="noopener" href="https://hexo.io/">Hexo</a>! This is your very first post. Check <a target="_blank" rel="noopener" href="https://hexo.io/docs/">documentation</a> for more info. If you get any problems when using Hexo, you can find the answer in <a target="_blank" rel="noopener" href="https://hexo.io/docs/troubleshooting.html">troubleshooting</a> or you can ask me on <a target="_blank" rel="noopener" href="https://github.com/hexojs/hexo/issues">GitHub</a>.</p>
-<h2 id="Quick-Start"><a href="#Quick-Start" class="headerlink" title="Quick Start"></a>Quick Start</h2><h3 id="Create-a-new-post"><a href="#Create-a-new-post" class="headerlink" title="Create a new post"></a>Create a new post</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo new <span class="string">&quot;My New Post&quot;</span></span><br></pre></td></tr></table></figure>
-
-<p>More info: <a target="_blank" rel="noopener" href="https://hexo.io/docs/writing.html">Writing</a></p>
-<h3 id="Run-server"><a href="#Run-server" class="headerlink" title="Run server"></a>Run server</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo server</span><br></pre></td></tr></table></figure>
-
-<p>More info: <a target="_blank" rel="noopener" href="https://hexo.io/docs/server.html">Server</a></p>
-<h3 id="Generate-static-files"><a href="#Generate-static-files" class="headerlink" title="Generate static files"></a>Generate static files</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo generate</span><br></pre></td></tr></table></figure>
-
-<p>More info: <a target="_blank" rel="noopener" href="https://hexo.io/docs/generating.html">Generating</a></p>
-<h3 id="Deploy-to-remote-sites"><a href="#Deploy-to-remote-sites" class="headerlink" title="Deploy to remote sites"></a>Deploy to remote sites</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo deploy</span><br></pre></td></tr></table></figure>
-
-<p>More info: <a target="_blank" rel="noopener" href="https://hexo.io/docs/one-command-deployment.html">Deployment</a></p>
-
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
-
   
 
 
 
           </div>
           
+    <div class="comments" id="gitalk-container"></div>
 
 <script>
   window.addEventListener('tabs:register', () => {
@@ -635,6 +405,7 @@
 
       <!--noindex-->
       <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%9C%BA%E6%99%AF%EF%BC%9A-%E4%BD%BF%E7%94%A8Flink-SQL-%E5%AF%B9Hudi%E8%A1%A8%E8%BF%9B%E8%A1%8CStreaming-Query"><span class="nav-number">1.</span> <span class="nav-text">场景： 使用Flink SQL 对Hudi表进行Streaming Query</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E8%A7%A3%E5%86%B3%E5%8A%9E%E6%B3%95"><span class="nav-number">2.</span> <span class="nav-text">解决办法</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%A7%A3%E5%86%B3%E6%96%B9%E6%B3%95%E4%B8%80%EF%BC%88%E6%8F%90%E4%BE%9B%E6%80%9D%E8%B7%AF%EF%BC%8C%E6%9C%AA%E8%83%BD%E5%B0%9D%E8%AF%95%E6%88%90%E5%8A%9F%EF%BC%89"><span class="nav-number">2.1.</span> <span class="nav-text">解决方法一（提供思路，未能尝试成功）</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%A7%A3%E5%86%B3%E5%8A%9E%E6%B3%95-%E4%BA%8C"><span class="nav-number">2.2.</span> <span class="nav-text">解决办法 二</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%9C%89%E6%84%9F"><span class="nav-number">3.</span> <span class="nav-text">有感</span></a></li></ol></div>
       </div>
       <!--/noindex-->
 
@@ -758,6 +529,25 @@
 
   
 
+<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.min.css">
+
+<script>
+NexT.utils.loadComments(document.querySelector('#gitalk-container'), () => {
+  NexT.utils.getScript('//cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.min.js', () => {
+    var gitalk = new Gitalk({
+      clientID    : 'da0ee7fa69f0629c79d9',
+      clientSecret: 'f6918e5fd02cf85cbaeeada3e59ac32bfabe20f4',
+      repo        : 'KTurnura.github.io',
+      owner       : 'KTurnura',
+      admin       : ['germey'],
+      id          : '44e3986ec9abd1ae94eec47767db66db',
+        language: 'zh-CN',
+      distractionFreeMode: true
+    });
+    gitalk.render('gitalk-container');
+  }, window.Gitalk);
+});
+</script>
 
 </body>
 </html>

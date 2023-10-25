@@ -1,6 +1,126 @@
 <?xml version="1.0" encoding="utf-8"?>
 <search>
   <entry>
+    <title>Hudi-Hive-3.1.3</title>
+    <url>/2023/10/25/Hudi-Hive-3-1-3/</url>
+    <content><![CDATA[<p>关于Hudi 0.13.1 Streaming Query  报错</p>
+<blockquote>
+<p> org.apache.hadoop.hive.ql.io.parquet.MapredParquetInputFormat ClassNotFoundException</p>
+</blockquote>
+<p>Keywords: <strong>Hudi编译Hive</strong>，<strong>Flink对Hudi进行Streaming Query</strong>，<strong>Hudi包冲突</strong>，<strong>编译Hudi</strong></p>
+<p>版本： </p>
+<table>
+<thead>
+<tr>
+<th>Hadoop</th>
+<th>3.2.2</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Spark</td>
+<td>3.2.4</td>
+</tr>
+<tr>
+<td>Flink</td>
+<td>1.16.1</td>
+</tr>
+<tr>
+<td>Hive</td>
+<td>3.1.3（后回退版本到3.1.2）</td>
+</tr>
+<tr>
+<td>Hudi</td>
+<td>0.13.1（后使用Hudi Github master分支-0.14.0）</td>
+</tr>
+</tbody></table>
+<p>&#x3D;&#x3D;(此处有包冲突，即Hive用的guava.jar版本为guava-19.0.jar,而Hadoop 3.2.2 版本guava.jar版本为guava-27.0-jre.jar)&#x3D;&#x3D;</p>
+<p>一般不建议runtime的Hadoop版本高于hive依赖的版本</p>
+<h1 id="场景：-使用Flink-SQL-对Hudi表进行Streaming-Query"><a href="#场景：-使用Flink-SQL-对Hudi表进行Streaming-Query" class="headerlink" title="场景： 使用Flink SQL 对Hudi表进行Streaming Query"></a>场景： 使用Flink SQL 对Hudi表进行Streaming Query</h1><p>官网介绍：<a href="https://hudi.apache.org/docs/flink-quick-start-guide#streaming-query">使用streaming-query实时查询Hudi表流式数据</a></p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">CREATE TABLE t2(</span><br><span class="line">  uuid VARCHAR(20) PRIMARY KEY NOT ENFORCED,</span><br><span class="line">  name VARCHAR(10),</span><br><span class="line">  age INT,</span><br><span class="line">  ts TIMESTAMP(3),</span><br><span class="line">  `partition` VARCHAR(20)</span><br><span class="line">)</span><br><span class="line">PARTITIONED BY (`partition`)</span><br><span class="line">WITH (</span><br><span class="line">  &#x27;connector&#x27; = &#x27;hudi&#x27;,</span><br><span class="line">  &#x27;path&#x27; = &#x27;hdfs://localhost:9000/hudi-warehouse/hudi-t1&#x27;,</span><br><span class="line">  &#x27;table.type&#x27; = &#x27;MERGE_ON_READ&#x27;,</span><br><span class="line">  &#x27;read.streaming.enabled&#x27; = &#x27;true&#x27;,  </span><br><span class="line">  &#x27;read.start-commit&#x27; = &#x27;20210316134557&#x27;, </span><br><span class="line">  &#x27;read.streaming.check-interval&#x27; = &#x27;4&#x27;</span><br><span class="line">);</span><br></pre></td></tr></table></figure>
+
+<p>当使用Flink Client SQL 对Hudi进行 Streaming Query 时，注意官网<code>Note</code></p>
+<blockquote>
+<p>The bundle jar with <strong>hive profile</strong> is needed for streaming query, by default the officially released flink bundle is built <strong>without</strong> <strong>hive profile</strong>, the jar needs to be built manually, see <a href="https://hudi.apache.org/docs/syncing_metastore#install">Build Flink Bundle Jar</a> for more details.</p>
+</blockquote>
+<p>然后我们此时就必须自己通过Hudi源码编译 <code>hudi-flink1.16-bundle-0.13.1.jar</code>包</p>
+<p>下载Hudi-0.13.1 版本的源码，解压，修改参数编译</p>
+<p>但当修改<code>~/hudi-0.13.1/pom.xml</code> </p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">&lt;hadoop.version&gt;3.1.2&lt;/hadoop.version&gt;</span><br><span class="line">&lt;hive.groupid&gt;org.apache.hive&lt;/hive.groupid&gt;</span><br><span class="line">&lt;hive.version&gt;3.1.3&lt;/hive.version&gt;</span><br></pre></td></tr></table></figure>
+
+<p>以及	<code>~/hudi-0.13.1/packaging/hudi-flink-bundle/pom.xml</code></p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">&lt;hive.version&gt;3.1.3&lt;/hive.version&gt;</span><br><span class="line">....</span><br><span class="line"></span><br><span class="line">&lt;profile&gt;</span><br><span class="line">   &lt;id&gt;flink-bundle-shade-hive3&lt;/id&gt;</span><br><span class="line">   &lt;properties&gt;</span><br><span class="line">     &lt;hive.version&gt;3.1.3&lt;/hive.version&gt;</span><br><span class="line">     &lt;flink.bundle.hive.scope&gt;compile&lt;/flink.bundle.hive.scope&gt;</span><br><span class="line">   &lt;/properties&gt;</span><br><span class="line">   &lt;dependencies&gt;</span><br><span class="line">     &lt;dependency&gt;</span><br><span class="line">       &lt;groupId&gt;$&#123;hive.groupid&#125;&lt;/groupId&gt;</span><br><span class="line">       &lt;artifactId&gt;hive-service-rpc&lt;/artifactId&gt;</span><br><span class="line">       &lt;version&gt;$&#123;hive.version&#125;&lt;/version&gt;</span><br><span class="line">       &lt;scope&gt;$&#123;flink.bundle.hive.scope&#125;&lt;/scope&gt;</span><br><span class="line">     &lt;/dependency&gt;</span><br><span class="line">     &lt;dependency&gt;</span><br><span class="line">       &lt;groupId&gt;$&#123;hive.groupid&#125;&lt;/groupId&gt;</span><br><span class="line">       &lt;artifactId&gt;hive-standalone-metastore&lt;/artifactId&gt;</span><br><span class="line">       &lt;version&gt;$&#123;hive.version&#125;&lt;/version&gt;</span><br><span class="line">       &lt;scope&gt;$&#123;flink.bundle.hive.scope&#125;&lt;/scope&gt;</span><br><span class="line">     &lt;/dependency&gt;</span><br><span class="line">   &lt;/dependencies&gt;</span><br><span class="line"> &lt;/profile&gt;</span><br></pre></td></tr></table></figure>
+
+<p>然后</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">mvn clean install -DskipTests -Pflink-bundle-shade-hive3</span><br></pre></td></tr></table></figure>
+
+<p>时无法构建，报错</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">[INFO] hudi-hadoop-mr ..................................... FAILURE [  2.121 s]</span><br><span class="line">.....</span><br><span class="line">[ERROR] Failed to execute goal org.apache.maven.plugins:maven-compiler-plugin:3.8.0:compile (default-compile) on project hudi-hadoop-mr: Compilation failure: Compilation failure: </span><br><span class="line">[ERROR] /Users/kturnura/Packages/hudi-0.13.1/hudi-hadoop-mr/src/main/java/org/apache/hudi/hadoop/utils/HoodieInputFormatUtils.java:[92,50] 无法将类 org.apache.hudi.hadHoodieParquetInputFormat中的构造器 HoodieParquetInputFormat应用到给定类型;</span><br><span class="line">[ERROR]   需要: org.apache.hudi.hadoop.HoodieCopyOnWriteTableInputFormat</span><br><span class="line">[ERROR]   找到: 没有参数</span><br><span class="line">[ERROR]   原因: 实际参数列表和形式参数列表长度不同</span><br><span class="line">[ERROR] /Users/kturnura/Packages/hudi-0.13.1/hudi-hadoop-mr/src/main/java/org/apache/hudi/hadoop/hive/HoodieCombineHiveInputFormat.java:[846,14] 无法将类 org.apache.huadoop.HoodieParquetInputFormat中的构造器 HoodieParquetInputFormat应用到给定类型;</span><br><span class="line">[ERROR]   需要: org.apache.hudi.hadoop.HoodieCopyOnWriteTableInputFormat</span><br><span class="line">[ERROR]   找到: 没有参数</span><br><span class="line">[ERROR]   原因: 实际参数列表和形式参数列表长度不同</span><br><span class="line">[ERROR] /Users/kturnura/Packages/hudi-0.13.1/hudi-hadoop-mr/src/main/java/org/apache/hudi/hadoop/utils/HiveAvroSerializer.java:[302,93] 不兼容的类型: org.apache.hadoopcommon.type.Date无法转换为java.sql.Date</span><br><span class="line">[ERROR] /Users/kturnura/Packages/hudi-0.13.1/hudi-hadoop-mr/src/main/java/org/apache/hudi/hadoop/utils/HiveAvroSerializer.java:[305,72] 不兼容的类型: org.apache.hadoopcommon.type.Timestamp无法转换为java.sql.Timestamp</span><br><span class="line">[ERROR] /Users/kturnura/Packages/hudi-0.13.1/hudi-hadoop-mr/src/main/java/org/apache/hudi/hadoop/utils/HiveAvroSerializer.java:[309,98] 不兼容的类型: org.apache.hadoopcommon.type.Date无法转换为java.sql.Date</span><br><span class="line">[ERROR] /Users/kturnura/Packages/hudi-0.13.1/hudi-hadoop-mr/src/main/java/com/uber/hoodie/hadoop/HoodieInputFormat.java:[26,8] 无法将类 org.apache.hudi.hadoop.HoodiePatInputFormat中的构造器 HoodieParquetInputFormat应用到给定类型;</span><br></pre></td></tr></table></figure>
+
+<h1 id="解决办法"><a href="#解决办法" class="headerlink" title="解决办法"></a>解决办法</h1><p>我们在Github找到了本问题的原因 <a href="https://github.com/apache/hudi/pull/7173">https://github.com/apache/hudi/pull/7173</a></p>
+<p>时间戳无法被Hive3 获取</p>
+<h2 id="解决方法一（提供思路，未能尝试成功）"><a href="#解决方法一（提供思路，未能尝试成功）" class="headerlink" title="解决方法一（提供思路，未能尝试成功）"></a>解决方法一（提供思路，未能尝试成功）</h2><p>使用patch 合并Contributor 的代码 <a href="https://github.com/apache/hudi/files/11574950/5189.patch.zip%E5%88%B0%E6%9C%AC%E5%9C%B0%E6%BA%90%E7%A0%81%E4%B8%AD">https://github.com/apache/hudi/files/11574950/5189.patch.zip到本地源码中</a></p>
+<p>测试使用</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">git apply --check patch/5189.patch</span><br></pre></td></tr></table></figure>
+
+<p>合并到hudi-0.13.1 源码中打补丁失败</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">git apply --reject file.patch</span><br></pre></td></tr></table></figure>
+
+<p>手动合并，使用这个命令产生冲突无法合并的文件会在<code>~/hudi-0.13.1/hudi-hadoop-mr/src/main/java/org/apache/hudi/hadoop</code>生成 .rej文件，然后手动合并</p>
+<p>可以以下链接参照来逐一修改java文件</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">https://github.com/apache/hudi/pull/7173/files#diff-cd42bec5495e839654687e99670f40d27defe7178bdd347f23db651fc3262bb7 </span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p> 此处比较迷惑的点是由于Git，使用Hudi-0.13.1源码合并Hudi master分支下的patch包。</p>
+<p> 还有一个就是尝试过直接copy master分支代码到Hudi 0.13版本在hudi-hadoop-mr&#x2F;src&#x2F;main&#x2F;java&#x2F;org&#x2F;apache&#x2F;hudi&#x2F;hadoop的代码，但是有新代码添加，无法成功执行</p>
+</blockquote>
+<h2 id="解决办法-二"><a href="#解决办法-二" class="headerlink" title="解决办法 二"></a>解决办法 二</h2><p>使用最新源码，同时回退Hive-3.1.2（这是出现另一个问题时Pflink-bundle-shade-hive3 默认指定hive版本为3.1.2，本人尝试多种方式解决减少冲突时回退了版本，&#x3D;&#x3D;但使用该方法使用 hive 3.1.3 应该也可以解决（因为源码中关于Hive 3.1.3 的时间戳）&#x3D;&#x3D;）</p>
+<p>出现问题：</p>
+<ol>
+<li><p>查看许多博客的方法：修改Hudi源码 <code>pom.xml</code>以及<code>~/hudi/packaging/hudi-flink-bundle/pom.xml</code> 中<code>hadoop.version</code>和<code>hive.version</code>版本。但仍然会出现guava.jar 冲突。报错：</p>
+<blockquote>
+<p>Caused by: java.lang.NoSuchMethodError: com.google.common.base.Preconditions.checkArgument (ZLjava&#x2F;lang&#x2F;String;Ljava&#x2F;lang&#x2F;Object;)V.</p>
+</blockquote>
+<p>原因：经过检查发现Hadoop3.1.3 和 hive-3.1.2 的lib下面的guava都是guava-27.0-jre.jar，没有冲突问题。<br>那就说明只可能是flink&#x2F;lib下面添加的上面4个jar包中有jar包编译时，引用的guava版本过低导致的。<br>通过源码锁定了hive-exec-3.1.2.jar 引用了guava-19.0.jar 包,并且 flink-sql-connector-hive-3.1.2_2.11-1.12.0.jar 引用了 hive-exec-3.1.2.jar &#x3D;&#x3D;参考文献&#x3D;&#x3D;：<a href="https://blog.csdn.net/chenshijie2011/article/details/114373468">https://blog.csdn.net/chenshijie2011/article/details/114373468</a></p>
+</li>
+<li><p>通过上述参考文献编译<code>Hive-exec-3.1.2.jar</code> 源码并没有解决问题，依然存在冲突</p>
+</li>
+</ol>
+<p>解决方式&#x3D;&#x3D;参考文献&#x3D;&#x3D;： <a href="https://www.cnblogs.com/itxiaoshen/p/16934160.html">https://www.cnblogs.com/itxiaoshen/p/16934160.html</a></p>
+<p>直接编译文件：具体版本根据个人环境调参</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">mvn clean package -DskipTests -Dcheckstyle.skip -Dspark3.2 -Dflink1.16 -Dscala-2.12 -Dhadoop.version=3.2.2 -Pflink-bundle-shade-hive3</span><br></pre></td></tr></table></figure>
+
+<p>此时打出的jar包中guava.jar 版本依然为19.0 ,而此时hadoop 的guava.jar 包中的 版本为 <code>guava-27.0-jre.jar</code></p>
+<p>需要拷贝hadoop下的该jar包到flink&#x2F;lib目录下！！</p>
+<p>这是最简单的方式！！！！</p>
+<h1 id="有感"><a href="#有感" class="headerlink" title="有感"></a>有感</h1><p>该文后续语言比较混乱，有大量试错的过程，原因是在解决该问题的同时用本文记录解决过程，后经过一次简单修改发布了本博客。该问题其实解决方式比较简单，只需要下载Hudi最新源码，编译Hudi，然后复制 guava.jar 到flink&#x2F;lib目录下即可解决问题。但这个解决问题的过程收获颇多。在编译Hive 和Hudi 诸多版本的源码时也遇到了一些其他的问题，解决一个问题是一个复杂问题的集合。</p>
+<p>希望该文能帮到各位</p>
+]]></content>
+  </entry>
+  <entry>
+    <title>hello-world2</title>
+    <url>/2023/10/25/hello-world2/</url>
+    <content><![CDATA[<h1 id="你好"><a href="#你好" class="headerlink" title="你好"></a>你好</h1><p>无敌</p>
+]]></content>
+  </entry>
+  <entry>
+    <title>编译Hive报错</title>
+    <url>/2023/10/25/%E7%BC%96%E8%AF%91Hive%E6%8A%A5%E9%94%99/</url>
+    <content><![CDATA[<h1 id="编译Hive-报错"><a href="#编译Hive-报错" class="headerlink" title="编译Hive 报错"></a>编译Hive 报错</h1><blockquote>
+<p>Failed to read artifact descriptor for org.pentaho:pentaho-aggdesigner-algorithm:jar:5.1.5-jhyde: Could not transfer artifact org.pentaho:pentaho-aggdesigner-algorithm:pom:5.1.5-jhyde from&#x2F;to conjars (<a href="https://conjars.org/repo">https://conjars.org/repo</a>)</p>
+</blockquote>
+<p>找不到<code>pentaho-aggdesigner-algorithm-5.1.5-jhyde.jar</code>包</p>
+<p>原因：官网地址变动<a href="https://conjars.wensel.net/">conjars</a></p>
+<p>解决办法：</p>
+<p>修改Maven setting.xml文件</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">&lt;mirrors&gt;</span><br><span class="line">  &lt;mirror&gt;</span><br><span class="line">    &lt;id&gt;conjars&lt;/id&gt;</span><br><span class="line">    &lt;name&gt;conjars&lt;/name&gt;</span><br><span class="line">    &lt;url&gt;https://conjars.wensel.net/repo/&lt;/url&gt;</span><br><span class="line">    &lt;mirrorOf&gt;conjars&lt;/mirrorOf&gt;</span><br><span class="line">  &lt;/mirror&gt;</span><br><span class="line">&lt;/mirrors&gt;</span><br></pre></td></tr></table></figure>
+
+<p>此时构建就可成功</p>
+<p>若没有访问外网的方式</p>
+<p>可以参考以下博客</p>
+<p><a href="https://blog.csdn.net/zxctime/article/details/106007508">https://blog.csdn.net/zxctime/article/details/106007508</a></p>
+]]></content>
+  </entry>
+  <entry>
     <title>Hello World</title>
     <url>/2023/10/25/hello-world/</url>
     <content><![CDATA[<p>Welcome to <a href="https://hexo.io/">Hexo</a>! This is your very first post. Check <a href="https://hexo.io/docs/">documentation</a> for more info. If you get any problems when using Hexo, you can find the answer in <a href="https://hexo.io/docs/troubleshooting.html">troubleshooting</a> or you can ask me on <a href="https://github.com/hexojs/hexo/issues">GitHub</a>.</p>
@@ -16,12 +136,6 @@
 <h3 id="Deploy-to-remote-sites"><a href="#Deploy-to-remote-sites" class="headerlink" title="Deploy to remote sites"></a>Deploy to remote sites</h3><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">$ hexo deploy</span><br></pre></td></tr></table></figure>
 
 <p>More info: <a href="https://hexo.io/docs/one-command-deployment.html">Deployment</a></p>
-]]></content>
-  </entry>
-  <entry>
-    <title>hello-world2</title>
-    <url>/2023/10/25/hello-world2/</url>
-    <content><![CDATA[<h1 id="你好"><a href="#你好" class="headerlink" title="你好"></a>你好</h1><p>无敌</p>
 ]]></content>
   </entry>
 </search>
