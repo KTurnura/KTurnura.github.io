@@ -22,7 +22,7 @@
     <meta name="description" content="涉猎的主要编程语言Java、Go，领域涵盖数据挖掘、分布式计算、流批处理等。">
 <meta property="og:type" content="website">
 <meta property="og:title" content="KTurnura Blog">
-<meta property="og:url" content="http://kturnura.github.io/index.html">
+<meta property="og:url" content="https://kturnura.github.io/index.html">
 <meta property="og:site_name" content="KTurnura Blog">
 <meta property="og:description" content="涉猎的主要编程语言Java、Go，领域涵盖数据挖掘、分布式计算、流批处理等。">
 <meta property="og:locale" content="zh_CN">
@@ -31,7 +31,7 @@
 <meta name="twitter:card" content="summary">
 
 
-<link rel="canonical" href="http://kturnura.github.io/">
+<link rel="canonical" href="https://kturnura.github.io/">
 
 
 
@@ -151,7 +151,7 @@
   <nav class="site-state">
       <div class="site-state-item site-state-posts">
         <a href="/archives/">
-          <span class="site-state-item-count">5</span>
+          <span class="site-state-item-count">4</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
@@ -162,7 +162,7 @@
       </div>
       <div class="site-state-item site-state-tags">
           <a href="/tags/">
-        <span class="site-state-item-count">1</span>
+        <span class="site-state-item-count">3</span>
         <span class="site-state-item-name">标签</span></a>
       </div>
   </nav>
@@ -203,7 +203,271 @@
   
 
   <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
-    <link itemprop="mainEntityOfPage" href="http://kturnura.github.io/posts/cec93071/">
+    <link itemprop="mainEntityOfPage" href="https://kturnura.github.io/posts/cdcc4eae/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="KTurnura">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="KTurnura Blog">
+      <meta itemprop="description" content="涉猎的主要编程语言Java、Go，领域涵盖数据挖掘、分布式计算、流批处理等。">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="undefined | KTurnura Blog">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          <a href="/posts/cdcc4eae/" class="post-title-link" itemprop="url">分布式事务</a>
+        </h2>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+      
+
+      <time title="创建时间：2023-11-21 21:07:47 / 修改时间：21:26:08" itemprop="dateCreated datePublished" datetime="2023-11-21T21:07:47+08:00">2023-11-21</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/Distributed-Transaction/" itemprop="url" rel="index"><span itemprop="name">Distributed Transaction</span></a>
+        </span>
+    </span>
+
+  
+    <span class="post-meta-break"></span>
+    <span class="post-meta-item" title="本文字数">
+      <span class="post-meta-item-icon">
+        <i class="far fa-file-word"></i>
+      </span>
+      <span class="post-meta-item-text">本文字数：</span>
+      <span>2.8k</span>
+    </span>
+    <span class="post-meta-item" title="阅读时长">
+      <span class="post-meta-item-icon">
+        <i class="far fa-clock"></i>
+      </span>
+      <span class="post-meta-item-text">阅读时长 &asymp;</span>
+      <span>5 分钟</span>
+    </span>
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+          <ol>
+<li><p>在遇上并发的时候，我们需要一个评价并发结果是否正确的标准</p>
+<p>数据库通常称这种标准为<strong>ACID</strong></p>
+<ol>
+<li>Atomic</li>
+<li>Consistent</li>
+<li>Isolated ： 两个事务同时运行，彼此看不到对方的中间更新操作的值<ol>
+<li>引出了一个性质：Serializable</li>
+</ol>
+</li>
+<li>Durable： 事务提交之后，事务所做的修改是持久的，不会因为某些故障而丢失。</li>
+</ol>
+</li>
+<li><p>事务可能会遇到事务中止的情况</p>
+<ol>
+<li>事务没有找到某个记录</li>
+<li>除零异常</li>
+<li>出现死锁，需要干掉引起死锁的事务</li>
+</ol>
+</li>
+<li><p>提供有序性的重要工具</p>
+<ol>
+<li>Concurrency Control</li>
+<li>原子提交</li>
+</ol>
+</li>
+<li><p>并发控制的两种方案</p>
+<ol>
+<li><p>悲观锁并发控制</p>
+<p>在事务使用任何数据之前，他需要先去获取该数据所对应的锁（<strong>不是一次获取该事务所执行的所有锁！！！</strong>）</p>
+<p>但会导致延迟，可能会存在FIFO类事务处理顺序，无法导致并发</p>
+<p><strong>如果经常发生冲突，推荐使用悲观锁</strong></p>
+</li>
+<li><p>乐观锁并发控制（OOC） </p>
+<p>不需要担心是否有其他事务和我们同时对数据进行读取，如果遇到并发冲突，那么你就会遇上一大堆事务中止的情况</p>
+</li>
+</ol>
+<p>	 </p>
+</li>
+<li><p>本文中主要讲的悲观锁，使用两阶段锁(2PL)的方式</p>
+<ol>
+<li>在对任何数据进行读取和写入操作之前，我们先去获取该数据对应的锁，直到事务被提交或者终止后，事务才能释放掉它所获取的锁</li>
+<li>悲观锁可能会导致死锁的情况 <ol>
+<li>数据库可以通过超时机制、跟踪周期等方案检测出死锁问题</li>
+</ol>
+</li>
+</ol>
+</li>
+<li><p><strong>事务不能提前释放某个之前使用的锁</strong></p>
+<ol>
+<li><p>提前释放锁可能会导致某个事务结果错误</p>
+<img src="https://raw.githubusercontent.com/KTurnura/imgs/main/202311/image-20231121104340443.png" style="zoom: 33%;" />
+
+
+</li>
+<li><p>同时，提前释放锁，可能该事务中止后，另一个获取该锁的事务会出现幻读的情况</p>
+</li>
+</ol>
+</li>
+</ol>
+<h1 id="分布式事务"><a href="#分布式事务" class="headerlink" title="分布式事务"></a>分布式事务</h1><ol>
+<li><p>原子性，要么执行所有操作，要么就都不执行</p>
+</li>
+<li><p>原子提交协议Atomic commit protocol</p>
+<ol>
+<li>用来帮助这些电脑判断他们是否能够完成他们自己那部分的任务并真正执行该部分任务。</li>
+</ol>
+</li>
+<li><p>存在一个Transaction Coordinate 的角色，向参与者发送执行信息。负责执行事务中部分任务的服务器叫做参与者，参与者之间可能持有不同的数据（<strong>有别于分布式系统为了保证容错而复制完整数据的行为</strong>）</p>
+</li>
+<li><p>每个服务器都保存不同事务各自持有的锁，<strong>不同事务通过Transaction ID来区分</strong>， </p>
+</li>
+<li><p>两阶段提交的流程 </p>
+<img src="https://raw.githubusercontent.com/KTurnura/imgs/main/202311/image-20231120204516881.png" style="zoom:50%;" />
+
+<img src="https://raw.githubusercontent.com/KTurnura/imgs/main/202311/image-20231121111352956.png" style="zoom:50%;" />
+
+<p> 在worker执行完commit，向coordinate恢复ack信息的时候，会释放锁</p>
+</li>
+</ol>
+<h1 id="事务执行中断后，分布式事务如何进行恢复"><a href="#事务执行中断后，分布式事务如何进行恢复" class="headerlink" title="事务执行中断后，分布式事务如何进行恢复"></a>事务执行中断后，分布式事务如何进行恢复</h1><ol>
+<li>如果B在给TC发送yes信息后崩溃， 因为TC收到了A、B的yes信息，则TC选择提交分布式事务，  A就会执行部分分布式任务，将部分结果持久化到磁盘，并最终释放锁</li>
+</ol>
+<p>​	当B崩溃恢复时，他依然准备去完成他之前准备负责的那部分事务 </p>
+<p>​	他并不知道任何事情，因为他还没有收到commit消息</p>
+<p>​	服务器不能因为崩溃和重启而丢失一个事务的状态</p>
+<p>​	<strong>在B回复TC的prepare消息之前</strong>，她首先得将该事务在内存中事务锁管理数	据的中间状态（即它所做的这些修改）和持有的lock列表持久化到磁盘上，	以 防止可能发生的崩溃中止，以及该事务持有的所有锁的记录持久化到磁盘	上，如果发生中止 ，那就只讲所相关的记录持久化到磁盘上（<strong>这也是造	成二阶段提交速度有点儿慢的原因所在</strong>）	</p>
+<p>​	 当他重启后，他就会进行恢复，然后重新发送prepared消息</p>
+<ol start="2">
+<li>同理，如果在接受到commit信息之后崩溃，可能B首先先将所有事务所需要的中间状态和锁持久化后，才会真的开始执行该事务，如果收到一个内存中没有的事务COMMIT消息，则该worker会对TC进行反馈</li>
+</ol>
+<h1 id="TC-错误"><a href="#TC-错误" class="headerlink" title="TC 错误"></a>TC 错误</h1><ol>
+<li><p>如果TC给A发送COMMIT消息之后崩溃了，那么TC必须进行重启并重新发送该commit消息，以确保两方都知道该事务可以被提交</p>
+<p>TC在发送任何commit消息之前，TC首先将关于该事务的信息（结果和事务id）写入到他的日志中，并持久化到存储设备中，比如磁盘，之后才发送commit信息</p>
+<p><strong>所以这也是Worker准备好接受重复commit消息的原因</strong></p>
+</li>
+<li><p>如果在发送commit消息之前崩溃，则没有关系，因为TC可以直接中止该事务，如果有某个参与者询问该事务的相关消息，参与者检查自己的日志，发现并没有commit信息，TC就会告诉他，我并不知道该事务的相关信息，那么该事务必然被终止了</p>
+</li>
+</ol>
+<h1 id="网络传播信息丢失"><a href="#网络传播信息丢失" class="headerlink" title="网络传播信息丢失"></a>网络传播信息丢失</h1><ol>
+<li><p>重发信息，如果有个服务器完全没有回复信息</p>
+<p>那么TC会选择不在该组服务器上运行该事务</p>
+<p>因为此时，回复yes&#x2F;no的服务器持有该事务所需要的锁，会对其他事务造成影响</p>
+<p>将abort消息转发给Worker</p>
+<p>如果后续未回复的服务器恢复，他会向TC反馈并没有接受到有关某个事务的信息，事务协调器此时内存中已经没有了关于该事务的任何信息，因为事务已经被TC中止，并将该事务的状态从它所保存的表中移除了，此时TC也会告诉worker，你也应该讲该事务中止</p>
+</li>
+<li><p>如果Worker在等待PREPARE的消息的过程中超时，则我们始终会允许该worker去中止该事务</p>
+</li>
+<li><p>但是如果在接受PREPARE消息，并恢复YES&#x2F;NO之后，此时TC因为网络延迟等原因掉线，Worker一直等待COMMIT消息，<strong>则此时WORKER不能自己选择中止该进程</strong>，即使超时了，阻塞所有其他事务，也必须等待</p>
+<p>因为此时TC可能已经提交了本次事务，其他服务器已经提交了，将本次事务所做的修改落地，并释放了锁，将这些修改展示给其他事务</p>
+<p>这种情况，就得让人对TC进行修复，并让他重启，读取上面它所保存的日志，最后发送了延迟很久都没发送的commit消息</p>
+</li>
+</ol>
+<h1 id="阻塞特性"><a href="#阻塞特性" class="headerlink" title="阻塞特性"></a>阻塞特性</h1><p>阻塞特性是2PC协议带来的属性，很难解决</p>
+<p>人们努力的将Worker接受到PREPARE到接收COMMIT消息的这段处理速度尽可能快，</p>
+<img src="https://raw.githubusercontent.com/KTurnura/imgs/main/202311/image-20231121111352956.png" style="zoom:50%;" />
+
+<p>这样，故障导致锁被参与者长时间持有而阻塞其他事务的时间就会尽可能的短</p>
+<p>甚至在该协议的某些变种，可能不需要去等待</p>
+<h1 id="事务协调器的日志"><a href="#事务协调器的日志" class="headerlink" title="事务协调器的日志"></a>事务协调器的日志</h1><ol>
+<li><p>TC必须将事务的有关信息保存在他的日志中，万一他崩溃了，这样就可以避免事务丢失，</p>
+<p>当事务协调器忘记它日志中有关事务的信息时，会发生神么？</p>
+<p>他会试着获取参与者所发送的所有确认信息，那么他就会知道所有的参与者是都提交了这个事务，还是中止了这个事务，所有的参与者都知道这个事务的命运</p>
+<p>一旦接受到所有参与者的确认信息，那么事务协调器会擦除该事务的所有信息</p>
+</li>
+<li><p>一旦当参与者收到了commit或abort信息，并且他们已经执行完它们所负责的那部分事务，并将他们的更新落地，释放他们所持有的锁，当参与者发送确认消息给事务协调器后，他们也可以完全忘记该事务的有关信息</p>
+</li>
+</ol>
+<h1 id="原子性的2PC协议能够保证ACID特性的事务"><a href="#原子性的2PC协议能够保证ACID特性的事务" class="headerlink" title="原子性的2PC协议能够保证ACID特性的事务"></a>原子性的2PC协议能够保证ACID特性的事务</h1><p>但由于太多轮网络传播和持久化操作</p>
+<p>只会在很小的范围内看到有人使用二阶段提交，比如一个机房，或者一个小组织（银行内部）</p>
+<p>类似于跨行转账，则不允许使用2PC，因为你不会想将你的数据库命运放在其他组织的手上</p>
+<p>如果面向的事务特性不太需要某阶段的持久化， 那么可以缩减2PC的持久化过程</p>
+<h1 id="区分Raft和2PC"><a href="#区分Raft和2PC" class="headerlink" title="区分Raft和2PC"></a>区分Raft和2PC</h1><p>Raft 不同服务器做的是相同的事情</p>
+<p>2PC不同服务器做的是不同的事情</p>
+<h1 id="是否可以将Raft和2PC结合构建一个系统-Lab4"><a href="#是否可以将Raft和2PC结合构建一个系统-Lab4" class="headerlink" title="是否可以将Raft和2PC结合构建一个系统 Lab4"></a>是否可以将Raft和2PC结合构建一个系统 Lab4</h1><p>该系统既具备raft进行复制所带来的高可用性， 也拥有在使用2PC是，让参与者去执行他们所负责的事务的这种能力</p>
+<img src="https://raw.githubusercontent.com/KTurnura/imgs/main/202311/image-202311211619258592.png" style="zoom: 33%;" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+      
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+</div>
+
+
+
+
+    
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
+    <link itemprop="mainEntityOfPage" href="https://kturnura.github.io/posts/cec93071/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/images/avatar.gif">
@@ -233,7 +497,7 @@
       <span class="post-meta-item-text">发表于</span>
       
 
-      <time title="创建时间：2023-10-30 22:13:56 / 修改时间：22:29:25" itemprop="dateCreated datePublished" datetime="2023-10-30T22:13:56+08:00">2023-10-30</time>
+      <time title="创建时间：2023-10-30 22:13:56 / 修改时间：22:56:57" itemprop="dateCreated datePublished" datetime="2023-10-30T22:13:56+08:00">2023-10-30</time>
     </span>
 
   
@@ -294,7 +558,7 @@
   
 
   <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
-    <link itemprop="mainEntityOfPage" href="http://kturnura.github.io/posts/c8e82d64/">
+    <link itemprop="mainEntityOfPage" href="https://kturnura.github.io/posts/c8e82d64/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/images/avatar.gif">
@@ -330,7 +594,7 @@
         <i class="far fa-calendar-check"></i>
       </span>
       <span class="post-meta-item-text">更新于</span>
-      <time title="修改时间：2023-10-30 22:39:54" itemprop="dateModified" datetime="2023-10-30T22:39:54+08:00">2023-10-30</time>
+      <time title="修改时间：2023-11-21 21:17:06" itemprop="dateModified" datetime="2023-11-21T21:17:06+08:00">2023-11-21</time>
     </span>
     <span class="post-meta-item">
       <span class="post-meta-item-icon">
@@ -339,10 +603,6 @@
       <span class="post-meta-item-text">分类于</span>
         <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
           <a href="/categories/Data-Lake/" itemprop="url" rel="index"><span itemprop="name">Data Lake</span></a>
-        </span>
-          ，
-        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-          <a href="/categories/Data-Lake/Hudi/" itemprop="url" rel="index"><span itemprop="name">Hudi</span></a>
         </span>
     </span>
 
@@ -488,7 +748,7 @@
   
 
   <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
-    <link itemprop="mainEntityOfPage" href="http://kturnura.github.io/posts/fd662788/">
+    <link itemprop="mainEntityOfPage" href="https://kturnura.github.io/posts/fd662788/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/images/avatar.gif">
@@ -583,200 +843,6 @@
 
 
 
-    
-
-
-<div class="post-block">
-  
-  
-
-  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
-    <link itemprop="mainEntityOfPage" href="http://kturnura.github.io/posts/e6dde273/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
-      <meta itemprop="name" content="KTurnura">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="KTurnura Blog">
-      <meta itemprop="description" content="涉猎的主要编程语言Java、Go，领域涵盖数据挖掘、分布式计算、流批处理等。">
-    </span>
-
-    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
-      <meta itemprop="name" content="undefined | KTurnura Blog">
-      <meta itemprop="description" content="">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          <a href="/posts/e6dde273/" class="post-title-link" itemprop="url">hello-world2</a>
-        </h2>
-
-        <div class="post-meta-container">
-          <div class="post-meta">
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-calendar"></i>
-      </span>
-      <span class="post-meta-item-text">发表于</span>
-
-      <time title="创建时间：2023-10-25 23:04:12" itemprop="dateCreated datePublished" datetime="2023-10-25T23:04:12+08:00">2023-10-25</time>
-    </span>
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-calendar-check"></i>
-      </span>
-      <span class="post-meta-item-text">更新于</span>
-      <time title="修改时间：2023-10-27 20:25:42" itemprop="dateModified" datetime="2023-10-27T20:25:42+08:00">2023-10-27</time>
-    </span>
-
-  
-    <span class="post-meta-break"></span>
-    <span class="post-meta-item" title="本文字数">
-      <span class="post-meta-item-icon">
-        <i class="far fa-file-word"></i>
-      </span>
-      <span class="post-meta-item-text">本文字数：</span>
-      <span>4</span>
-    </span>
-    <span class="post-meta-item" title="阅读时长">
-      <span class="post-meta-item-icon">
-        <i class="far fa-clock"></i>
-      </span>
-      <span class="post-meta-item-text">阅读时长 &asymp;</span>
-      <span>1 分钟</span>
-    </span>
-</div>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-          <h1 id="你好"><a href="#你好" class="headerlink" title="你好"></a>你好</h1><p>无敌</p>
-
-      
-    </div>
-
-    
-    
-    
-
-    <footer class="post-footer">
-        <div class="post-eof"></div>
-      
-    </footer>
-  </article>
-</div>
-
-
-
-
-    
-
-
-<div class="post-block">
-  
-  
-
-  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
-    <link itemprop="mainEntityOfPage" href="http://kturnura.github.io/posts/4a17b156/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
-      <meta itemprop="name" content="KTurnura">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="KTurnura Blog">
-      <meta itemprop="description" content="涉猎的主要编程语言Java、Go，领域涵盖数据挖掘、分布式计算、流批处理等。">
-    </span>
-
-    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
-      <meta itemprop="name" content="undefined | KTurnura Blog">
-      <meta itemprop="description" content="">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          <a href="/posts/4a17b156/" class="post-title-link" itemprop="url">Hello World</a>
-        </h2>
-
-        <div class="post-meta-container">
-          <div class="post-meta">
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-calendar"></i>
-      </span>
-      <span class="post-meta-item-text">发表于</span>
-
-      <time title="创建时间：2023-10-25 22:28:05" itemprop="dateCreated datePublished" datetime="2023-10-25T22:28:05+08:00">2023-10-25</time>
-    </span>
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-calendar-check"></i>
-      </span>
-      <span class="post-meta-item-text">更新于</span>
-      <time title="修改时间：2023-10-27 20:25:42" itemprop="dateModified" datetime="2023-10-27T20:25:42+08:00">2023-10-27</time>
-    </span>
-
-  
-    <span class="post-meta-break"></span>
-    <span class="post-meta-item" title="本文字数">
-      <span class="post-meta-item-icon">
-        <i class="far fa-file-word"></i>
-      </span>
-      <span class="post-meta-item-text">本文字数：</span>
-      <span>367</span>
-    </span>
-    <span class="post-meta-item" title="阅读时长">
-      <span class="post-meta-item-icon">
-        <i class="far fa-clock"></i>
-      </span>
-      <span class="post-meta-item-text">阅读时长 &asymp;</span>
-      <span>1 分钟</span>
-    </span>
-</div>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-          <p>Welcome to <a target="_blank" rel="noopener" href="https://hexo.io/">Hexo</a>! This is your very first post. Check <a target="_blank" rel="noopener" href="https://hexo.io/docs/">documentation</a> for more info. If you get any problems when using Hexo, you can find the answer in <a target="_blank" rel="noopener" href="https://hexo.io/docs/troubleshooting.html">troubleshooting</a> or you can ask me on <a target="_blank" rel="noopener" href="https://github.com/hexojs/hexo/issues">GitHub</a>.</p>
-<h2 id="Quick-Start"><a href="#Quick-Start" class="headerlink" title="Quick Start"></a>Quick Start</h2><h3 id="Create-a-new-post"><a href="#Create-a-new-post" class="headerlink" title="Create a new post"></a>Create a new post</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo new <span class="string">&quot;My New Post&quot;</span></span><br></pre></td></tr></table></figure>
-
-<p>More info: <a target="_blank" rel="noopener" href="https://hexo.io/docs/writing.html">Writing</a></p>
-<h3 id="Run-server"><a href="#Run-server" class="headerlink" title="Run server"></a>Run server</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo server</span><br></pre></td></tr></table></figure>
-
-<p>More info: <a target="_blank" rel="noopener" href="https://hexo.io/docs/server.html">Server</a></p>
-<h3 id="Generate-static-files"><a href="#Generate-static-files" class="headerlink" title="Generate static files"></a>Generate static files</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo generate</span><br></pre></td></tr></table></figure>
-
-<p>More info: <a target="_blank" rel="noopener" href="https://hexo.io/docs/generating.html">Generating</a></p>
-<h3 id="Deploy-to-remote-sites"><a href="#Deploy-to-remote-sites" class="headerlink" title="Deploy to remote sites"></a>Deploy to remote sites</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo deploy</span><br></pre></td></tr></table></figure>
-
-<p>More info: <a target="_blank" rel="noopener" href="https://hexo.io/docs/one-command-deployment.html">Deployment</a></p>
-
-      
-    </div>
-
-    
-    
-    
-
-    <footer class="post-footer">
-        <div class="post-eof"></div>
-      
-    </footer>
-  </article>
-</div>
-
-
-
-
 
 </div>
   </main>
@@ -797,13 +863,13 @@
     <span class="post-meta-item-icon">
       <i class="fa fa-chart-line"></i>
     </span>
-    <span title="站点总字数">7k</span>
+    <span title="站点总字数">10k</span>
   </span>
   <span class="post-meta-item">
     <span class="post-meta-item-icon">
       <i class="fa fa-coffee"></i>
     </span>
-    <span title="站点阅读时长">13 分钟</span>
+    <span title="站点阅读时长">18 分钟</span>
   </span>
 </div>
   <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/pisces/" rel="noopener" target="_blank">NexT.Pisces</a> 强力驱动

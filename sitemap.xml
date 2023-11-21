@@ -2,7 +2,25 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   
   <url>
-    <loc>http://kturnura.github.io/tags/index.html</loc>
+    <loc>https://kturnura.github.io/posts/cdcc4eae/</loc>
+    
+    <lastmod>2023-11-21</lastmod>
+    
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>https://kturnura.github.io/posts/c8e82d64/</loc>
+    
+    <lastmod>2023-11-21</lastmod>
+    
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>https://kturnura.github.io/posts/cec93071/</loc>
     
     <lastmod>2023-10-30</lastmod>
     
@@ -11,7 +29,7 @@
   </url>
   
   <url>
-    <loc>http://kturnura.github.io/categories/index.html</loc>
+    <loc>https://kturnura.github.io/categories/index.html</loc>
     
     <lastmod>2023-10-30</lastmod>
     
@@ -20,7 +38,7 @@
   </url>
   
   <url>
-    <loc>http://kturnura.github.io/posts/c8e82d64/</loc>
+    <loc>https://kturnura.github.io/tags/index.html</loc>
     
     <lastmod>2023-10-30</lastmod>
     
@@ -29,34 +47,7 @@
   </url>
   
   <url>
-    <loc>http://kturnura.github.io/posts/cec93071/</loc>
-    
-    <lastmod>2023-10-30</lastmod>
-    
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  
-  <url>
-    <loc>http://kturnura.github.io/posts/fd662788/</loc>
-    
-    <lastmod>2023-10-27</lastmod>
-    
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  
-  <url>
-    <loc>http://kturnura.github.io/posts/e6dde273/</loc>
-    
-    <lastmod>2023-10-27</lastmod>
-    
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  
-  <url>
-    <loc>http://kturnura.github.io/posts/4a17b156/</loc>
+    <loc>https://kturnura.github.io/posts/fd662788/</loc>
     
     <lastmod>2023-10-27</lastmod>
     
@@ -66,16 +57,30 @@
   
 
   <url>
-    <loc>http://kturnura.github.io/</loc>
-    <lastmod>2023-10-30</lastmod>
+    <loc>https://kturnura.github.io/</loc>
+    <lastmod>2023-11-21</lastmod>
     <changefreq>daily</changefreq>
     <priority>1.0</priority>
   </url>
 
   
   <url>
-    <loc>http://kturnura.github.io/tags/Hudi/</loc>
-    <lastmod>2023-10-30</lastmod>
+    <loc>https://kturnura.github.io/tags/Hudi/</loc>
+    <lastmod>2023-11-21</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>https://kturnura.github.io/tags/Distributed-System/</loc>
+    <lastmod>2023-11-21</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>https://kturnura.github.io/tags/%E5%88%86%E5%B8%83%E5%BC%8F%E7%90%86%E8%AE%BA/</loc>
+    <lastmod>2023-11-21</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
@@ -83,15 +88,15 @@
 
   
   <url>
-    <loc>http://kturnura.github.io/categories/Data-Lake/</loc>
-    <lastmod>2023-10-30</lastmod>
+    <loc>https://kturnura.github.io/categories/Data-Lake/</loc>
+    <lastmod>2023-11-21</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
-    <loc>http://kturnura.github.io/categories/Data-Lake/Hudi/</loc>
-    <lastmod>2023-10-30</lastmod>
+    <loc>https://kturnura.github.io/categories/Distributed-Transaction/</loc>
+    <lastmod>2023-11-21</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
